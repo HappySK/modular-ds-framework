@@ -33,7 +33,7 @@ def predict_datapoint():
 
         pred_pipeline = PredictPipeline()
         results = pred_pipeline.predict(pred_df)
-        return render_template("home.html", results=f"Student's Estimated Math Score is {results[0]}")
+        return render_template("stud_perf_predictor.html", results=f"Student's Estimated Math Score is {results[0]}")
 
 if __name__ == "__main__":
     app.run("0.0.0.0")
