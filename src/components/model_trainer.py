@@ -1,6 +1,7 @@
 import os
 import sys
 from dataclasses import dataclass
+import mlflow
 
 from catboost import CatBoostRegressor
 
@@ -27,6 +28,7 @@ class ModelTrainerConfig:
 
 class ModelTrainer:
     def __init__(self):
+        mlflow.set_tracking_uri(uri="http://127.0.0.1:8080")
         self.model_trainer_config = ModelTrainerConfig()
 
     def initiate_model_trainer(self, train_array, test_array):
