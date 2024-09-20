@@ -13,3 +13,5 @@
 /notebook/.ipynb_checkpoints/1 . EDA STUDENT PERFORMANCE -checkpoint.ipynb
 /notebook/.ipynb_checkpoints/2. MODEL TRAINING-checkpoint.ipynb
 /notebook/data/
+/mlartifacts/
+/mlruns/
