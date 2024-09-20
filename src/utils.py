@@ -3,12 +3,13 @@ import sys
 import numpy as np
 import pandas as pd
 import dill, yaml, argparse
+import mlflow
 
 from src.exception import CustomException
 from src.logger import logging
 
-from sklearn.metrics import r2_score
 from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import *
 
 def save_object(file_path, obj):
     try:
@@ -23,25 +24,30 @@ def save_object(file_path, obj):
 def evaluate_model(X_train, X_test, y_train, y_test, models, params):
     try:
         report = {}
+        config = get_yaml_config("src/config/model_config.yaml")
 
-        for i in range(len(list(models))):
-            model = list(models.values())[i]
-            para = params[list(models.keys())[i]]
+        for model_nm, model_class in models.items():
+            mlflow.set_experiment(f"STUD_PERF_PRED_{model_nm.upper()}")
+            para = params[model_nm]
 
-            gs = GridSearchCV(model, para, cv=3)
+            gs = GridSearchCV(model_class, para, cv=3)
             gs.fit(X_train, y_train)
 
-            model.set_params(**gs.best_params_)
-            model.fit(X_train, y_train)
+            model_class.set_params(**gs.best_params_)
+            model_class.fit(X_train, y_train)
 
-            logging.info("Evaluating the model")
-            y_train_pred = model.predict(X_train)
-            y_test_pred = model.predict(X_test)
+            logging.info(f"Evaluating the model - {model_nm}")
+            y_test_pred = model_class.predict(X_test)
 
-            train_model_score = r2_score(y_train, y_train_pred)
+            metrics = get_metrics(y_test, y_test_pred)
             test_model_score = r2_score(y_test, y_test_pred)
 
-            report[list(models.keys())[i]] = test_model_score
+            report[model_nm] = test_model_score
+
+            with mlflow.start_run():
+                mlflow.log_params(para)
+                mlflow.log_metrics(metrics)
+                mlflow.set_tags(config["mlflow"]["tags"])
 
         return report
 
@@ -57,7 +63,7 @@ def load_object(file_path):
         raise CustomException("Invalid Load Value", e, sys)
 
 
-def get_yaml_config(file_name):
+def get_yaml_config(file_name="src/config/model_config.yaml"):
 
     parser = argparse.ArgumentParser()
     parser.add_argument("dataset")
@@ -76,3 +82,11 @@ def get_columns(file_name="src/config/model_config.yaml"):
     target_column = config["columns"]["target"]
 
     return numerical_columns, categorical_columns, target_column
+
+def get_metrics(pred_val, act_val):
+    config = get_yaml_config()
+    metrics = {}
+    for metric in config["mlflow"]["metrics"]:
+        metrics[metric] = eval(metric)(act_val, pred_val)
+
+    return metrics
