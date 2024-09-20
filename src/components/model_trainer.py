@@ -18,11 +18,12 @@ from xgboost import XGBRegressor
 from src.exception import CustomException
 from src.logger import logging
 
-from src.utils import evaluate_model, save_object
+from src.utils import evaluate_model, save_object, get_yaml_config
 
 @dataclass
 class ModelTrainerConfig:
-    trained_model_file_path = os.path.join("artifacts", "model.pkl")
+    config = get_yaml_config("src/config/model_config.yaml")
+    trained_model_file_path = config["model_path"]
 
 class ModelTrainer:
     def __init__(self):

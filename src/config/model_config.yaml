@@ -1,0 +1,17 @@
+student_performance:
+  train_data_path: "artifacts/train.csv"
+  test_data_path: "artifacts/test.csv"
+  raw_data_path: "notebook/data/stud.csv"
+  preprocessor_file_path: "artifacts/preprocessor.pkl"
+  model_path: "artifacts/model.pkl"
+  columns:
+    categorical:
+      - gender
+      - race_ethnicity
+      - parental_level_of_education
+      - lunch
+      - test_preparation_course
+    numerical:
+      - reading_score
+      - writing_score
+    target: math_score

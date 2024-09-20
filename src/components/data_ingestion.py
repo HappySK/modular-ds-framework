@@ -10,11 +10,15 @@ from dataclasses import dataclass
 from src.components.data_transformation import DataTransformation
 from src.components.model_trainer import ModelTrainer
 
+from src.utils import get_yaml_config
+import argparse
+
 @dataclass
 class DataIngestionConfig:
-    train_data_path: str = os.path.join('artifacts','train.csv')
-    test_data_path: str = os.path.join('artifacts','test.csv')
-    raw_data_path: str = os.path.join('artifacts','raw.csv')
+    config = get_yaml_config("src/config/model_config.yaml")
+    train_data_path: str = config['train_data_path']
+    test_data_path: str = config['test_data_path']
+    raw_data_path: str = config['raw_data_path']
 
 class DataIngestion:
     def __init__(self):
@@ -23,7 +27,7 @@ class DataIngestion:
     def initiate_data_ingestion(self):
         logging.info("Entered the Data Ingestion Component")
         try:
-            df = pd.read_csv('notebook/data/stud.csv')
+            df = pd.read_csv(self.ingestion_config.raw_data_path)
             logging.info("Read the dataset as Dataframe")
 
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path), exist_ok=True)

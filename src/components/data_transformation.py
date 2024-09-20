@@ -12,10 +12,11 @@ from src.exception import CustomException
 from src.logger import logging
 from sklearn.pipeline import Pipeline
 
-from src.utils import save_object
+from src.utils import save_object, get_yaml_config, get_columns
 @dataclass
 class DataTransformatonConfig:
-    preprocessor_obj_file_path = os.path.join("artifacts", "preprocessor.pkl")
+    config = get_yaml_config("src/config/model_config.yaml")
+    preprocessor_obj_file_path = config["preprocessor_file_path"]
 
 class DataTransformation:
     def __init__(self):
@@ -23,14 +24,7 @@ class DataTransformation:
 
     def get_data_transformer_object(self):
         try:
-            numerical_columns = ["reading_score", "writing_score"]
-            categorical_columns = [
-                "gender",
-                "race_ethnicity",
-                "parental_level_of_education",
-                "lunch",
-                "test_preparation_course"
-            ]
+            numerical_columns, categorical_columns, _ = get_columns()
 
             num_pipeline = Pipeline(
                 steps = [
@@ -73,8 +67,7 @@ class DataTransformation:
             logging.info("Obtaining preprocessing object")
 
             preprocessing_obj = self.get_data_transformer_object()
-            target_column_name = "math_score"
-            numerical_columns = ["reading_score", "writing_score"]
+            _, _, target_column_name = get_columns()
 
             input_feature_train_df = train_df.drop(columns=[target_column_name], axis=1)
             target_feature_train_df = train_df[target_column_name]

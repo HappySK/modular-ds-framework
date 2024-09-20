@@ -1,3 +1,15 @@
 /nycopendata.egg-info/
 /src/logs/
 /artifacts/
+/logs/
+/catboost_info/
+/notebook/catboost_info/
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/.gitignore
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/nycopendata.iml
+/.idea/vcs.xml
+/notebook/.ipynb_checkpoints/1 . EDA STUDENT PERFORMANCE -checkpoint.ipynb
+/notebook/.ipynb_checkpoints/2. MODEL TRAINING-checkpoint.ipynb
+/notebook/data/
